@@ -14,27 +14,30 @@
 		<script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
 		<script type="text/javascript">
 			$(async function() {
-				let content = (await $.getJSON("https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/w/api.php?action=query&format=json&prop=revisions&titles=Wikipedia%3AWikipediholism_test&formatversion=2&rvprop=content&rvslots=*")).query.pages[0].revisions[0].slots.main.content.split(/==[\w\s]+==/g),
-					questions = content[1].split("\n#"),
+				let content = ($("#status").html("Getting test contents"),await $.getJSON("https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/w/api.php?action=query&format=json&prop=revisions&titles=Wikipedia%3AWikipediholism_test&formatversion=2&rvprop=content&rvslots=*")).query.pages[0].revisions[0].slots.main.content.split(/==[\w\s]+==/g),
+					lines = content[1].split("\n#"),
 					p = -1,
-					pages = [],
-					articles = (await $.getJSON("https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/w/api.php?action=query&format=json&meta=siteinfo&formatversion=2&siprop=statistics")).query.statistics.articles;
+					questions = [],
+					articles = ($("#status").html("Loading Wikipedia statistics"),await $.getJSON("https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/w/api.php?action=query&format=json&meta=siteinfo&formatversion=2&siprop=statistics")).query.statistics.articles;
 
-				if (/^\n.*($|\n)/g.test(questions[0])) {
-					questions.shift()
+				$(".revision").html(($("#status").html("Establishing latest revision"),await $.getJSON("https://en.wikipedia.org/w/rest.php/v1/page/Wikipedia:Wikipediholism%20test/history")).revisions[0].id)
+				$("#status").html("Parsing data")
+				if (/^\n.*($|\n)/g.test(lines[0])) {
+					lines.shift()
 				}
-				for (let e of questions) {
+				for (let e of lines) {
+					let per = /\(([0-9.-]+\s?(per|(for\s)?(every|each))).*\)$/g.test(e = e.replaceAll(/\n/g, ""));
 					e = {
-						input: /\(.*(add|every).*\)/g.test(e),
-						value: +/\(([0-9.-]+).*\)$/g.exec(e = e.replaceAll(/\n/g, ""))[1],
+						input: /\(.*(add|every).*\)/g.test(e) || per,
+						value: +/\(([0-9.-]+).*\)$/g.exec(e)[1],
 						text: ((str) => {
 							let nowikis = str.match(/<nowiki>(((?!<\/nowiki>).)*)<\/nowiki>/g);
 							str = str
 								.replaceAll(/(^|[^'])'([^']|$)/gi, "$1&#39;$2")
 								.replaceAll(/\]\](s)/gi, "$1]]")
 								.replaceAll(/\[(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*))\s(.*)\]/gi, '<a href="$1">$2</a>')
-								.replaceAll(/''([^'']+)''/gi, '<i>$1</i>')
-								.replaceAll(/'''([^''']+)'''/gi, '<strong>$1</strong>')
+								.replaceAll(/''([^']+)''/gi, '<i>$1</i>')
+								.replaceAll(/'''([^']+)'''/gi, '<strong>$1</strong>')
 								.replaceAll(/\[\[([^|\[\]]+)\|([^|\[\]]+)\]\]/gi, '<a href="https://en.wikipedia.org/wiki/$1">$2</a>')
 								.replaceAll(/\[\[([^|\[\]]+)\]\]/gi, '<a href="https://en.wikipedia.org/wiki/$1">$1</a>')
 								.replaceAll(/\{\{NUMBEROFARTICLES\}\}/g, articles)
@@ -44,16 +47,18 @@
 								}
 							}
 							return str
-						})(e.replaceAll(/\s\([^\(]+\)$/g, ""))
+						})(e.replaceAll(/\s\([^\(]+\)$/g, "")),
+						increment: per || undefined
 					};
 					if (/^\.+/g.test(e.text)) {
 						e.text = e.text.replaceAll(/^\.+/g, "");
-						pages[p].push(e)
+						questions[p].push(e)
 					} else {
-						pages[++p] = [e]
+						questions[++p] = [e]
 					}
 				}
-				for(let k of pages)
+				$("#status").remove()
+				for(let k of questions)
 					for(let e of k){
 						$("#content").append(`<p>${e.text}</p>${e.input ? '<input type="text"/>':""}`)
 					}
@@ -62,12 +67,36 @@
 	</head>
 	<body>
 		<div id="container">
-			<div id="content">
-				
+		<a class="github" href="https://github.com/DiriectorDoc/Doc-s-Wikipediholism-test"></a>
+		<div id="content">
+			<div id="status">
 			</div>
-			<a class="github" href="https://github.com/DiriectorDoc/Doc-s-Wikipediholism-test"></a>
+		</div>
+		<table>
+			<tr>
+				<td>
+					<div class="wikipediauserbox" style="border:1px solid #ccf; margin:1px; width:238px; direction:ltr; color: #000000; line-height: 1.5em;font-size: 127%;">
+						<table role="presentation" style="border-collapse:collapse; width:238px; margin-bottom:0; margin-top:0; background:#f8f8ff; font-size: 100%; display:table; box-sizing: border-box; text-indent:initial; border-spacing:2px; border-color:grey;">
+							<tbody style="display: table-row-group; vertical-align:middle; border-color:inherit;">
+								<tr style="display: table-row; vertical-align:inherit; border-color:inherit;">
+									<td style="border:0; width:45px; height:45px; background:#ccf;text-align:center; font-size:14pt; font-weight:bold; color:black; padding:0 1px 0 0; line-height:1.25em; vertical-align:middle; display: table-cell;">
+										<a href="https://en.wikipedia.org/wiki/File:Star_of_life.svg" class="image">
+										<img alt="Star of life.svg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Star_of_life.svg/42px-Star_of_life.svg.png" decoding="async" width="42" height="41" srcset="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Star_of_life.svg/63px-Star_of_life.svg.png 1.5x, https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Star_of_life.svg/84px-Star_of_life.svg.png 2x" data-file-width="198" data-file-height="192" style="border:0; vertical-align:middle;"/>
+										</a>
+									</td>
+									<td style="border:0; text-align:left; font-size:8pt; padding:0 4px 0 4px; height:45px; line-height:1.1; color:black; vertical-align:middle; display: table-cell;">This user scored <b class="total">{{{1}}}</b> on the <b><a href="/wiki/Wikipedia:Wikipediholism_test" title="Wikipedia:Wikipediholism test">Wikipediholic test</a></b>.</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</td>
+				<td><code>{{<a href="https://en.wikipedia.org/wiki/Template:User_Wikipediholic">User Wikipediholic</a>|<span class="total">(your score)</span>|<span class="revision"></span>}}</code></td>
+			</tr>
+		</table>
+		<div id="footer">
 			Credit: Text on this page was fetched from <a href="https://en.wikipedia.org/wiki/Wikipedia:Wikipediholism_test">Wikipedia:Wikipediholism test</a>, which is availible under <a href="https://en.wikipedia.org/wiki/Wikipedia:Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
 			<div class="footer" />
+			</div>
 		</div>
 	</body>
 </html>
