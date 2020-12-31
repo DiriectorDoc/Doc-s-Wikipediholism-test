@@ -25,20 +25,22 @@
 				}
 				for (let e of questions) {
 					e = {
+						input: /\(.*(add|every).*\)/g.test(e),
 						value: +/\(([0-9.-]+).*\)$/g.exec(e = e.replaceAll(/\n/g, ""))[1],
 						text: ((str) => {
-							let nowikis = /<nowiki>(.*)<\/nowiki>/g.exec(str);
+							let nowikis = str.match(/<nowiki>(((?!<\/nowiki>).)*)<\/nowiki>/g);
 							str = str
-								.replaceAll(/(^|[^'])'([^']|$)/gi, "$1\u0027$2")
+								.replaceAll(/(^|[^'])'([^']|$)/gi, "$1&#39;$2")
+								.replaceAll(/\]\](s)/gi, "$1]]")
 								.replaceAll(/\[(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*))\s(.*)\]/gi, '<a href="$1">$2</a>')
 								.replaceAll(/''([^'']+)''/gi, '<i>$1</i>')
 								.replaceAll(/'''([^''']+)'''/gi, '<strong>$1</strong>')
-								.replaceAll(/\[\[([^|]+)\]\]/gi, '<a href="https://en.wikipedia.org/wiki/$1">$1</a>')
-								.replaceAll(/\[\[([^|]+)\|([^|]+)\]\]/gi, '<a href="https://en.wikipedia.org/wiki/$1">$2</a>')
+								.replaceAll(/\[\[([^|\[\]]+)\|([^|\[\]]+)\]\]/gi, '<a href="https://en.wikipedia.org/wiki/$1">$2</a>')
+								.replaceAll(/\[\[([^|\[\]]+)\]\]/gi, '<a href="https://en.wikipedia.org/wiki/$1">$1</a>')
 								.replaceAll(/\{\{NUMBEROFARTICLES\}\}/g, articles)
 							if(nowikis){
 								for(let i = 1; i < nowikis.length; i++){
-									str = str.replace(/<nowiki>(.*)<\/nowiki>/g, nowikis[i])
+									str = nowikis[i].replace(/<nowiki>(.*)<\/nowiki>/g, "$1")
 								}
 							}
 							return str
@@ -51,12 +53,18 @@
 						pages[++p] = [e]
 					}
 				}
-				console.log(pages)
+				for(let k of pages)
+					for(let e of k){
+						$("#content").append(`<p>${e.text}</p>${e.input ? '<input type="text"/>':""}`)
+					}
 			})
 		</script>
 	</head>
 	<body>
 		<div id="container">
+			<div id="content">
+				
+			</div>
 			<a class="github" href="https://github.com/DiriectorDoc/Doc-s-Wikipediholism-test"></a>
 			Credit: Text on this page was fetched from <a href="https://en.wikipedia.org/wiki/Wikipedia:Wikipediholism_test">Wikipedia:Wikipediholism test</a>, which is availible under <a href="https://en.wikipedia.org/wiki/Wikipedia:Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
 			<div class="footer" />
