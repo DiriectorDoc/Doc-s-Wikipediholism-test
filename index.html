@@ -35,7 +35,7 @@
 							str = str
 								.replaceAll(/(^|[^'])'([^']|$)/gi, "$1&#39;$2")
 								.replaceAll(/\]\](s)/gi, "$1]]")
-								.replaceAll(/\[(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*))\s(.*)\]/gi, '<a href="$1">$2</a>')
+								.replaceAll(/\[(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/=]*))\s(.*)\]/gi, '<a href="$1">$4</a>')
 								.replaceAll(/''([^']+)''/gi, '<i>$1</i>')
 								.replaceAll(/'''([^']+)'''/gi, '<strong>$1</strong>')
 								.replaceAll(/\[\[([^|\[\]]+)\|([^|\[\]]+)\]\]/gi, '<a href="https://en.wikipedia.org/wiki/$1">$2</a>')
