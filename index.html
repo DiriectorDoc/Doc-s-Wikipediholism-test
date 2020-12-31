@@ -15,10 +15,10 @@
 		<script type="text/javascript">
 			$(async function() {
 				let content = ($("#status").html("Getting test contents"),await $.getJSON("https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/w/api.php?action=query&format=json&prop=revisions&titles=Wikipedia%3AWikipediholism_test&formatversion=2&rvprop=content&rvslots=*")).query.pages[0].revisions[0].slots.main.content.split(/==[\w\s]+==/g),
+					articles = ($("#status").html("Loading Wikipedia statistics"),await $.getJSON("https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/w/api.php?action=query&format=json&meta=siteinfo&formatversion=2&siprop=statistics")).query.statistics.articles,
 					lines = content[1].split("\n#"),
 					p = -1,
-					questions = [],
-					articles = ($("#status").html("Loading Wikipedia statistics"),await $.getJSON("https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/w/api.php?action=query&format=json&meta=siteinfo&formatversion=2&siprop=statistics")).query.statistics.articles;
+					questions = [];
 
 				$(".revision").html(($("#status").html("Establishing latest revision"),await $.getJSON("https://en.wikipedia.org/w/rest.php/v1/page/Wikipedia:Wikipediholism%20test/history")).revisions[0].id)
 				$("#status").html("Parsing data")
@@ -26,7 +26,7 @@
 					lines.shift()
 				}
 				for (let e of lines) {
-					let per = /\(([0-9.-]+\s?(per|(for\s)?(every|each))).*\)$/g.test(e = e.replaceAll(/\n/g, ""));
+					let per = /\((-?(\d*\.\d+|\d+)\s?(per|(for\s)?(every|each))).*\)$/g.test(e = e.replaceAll(/\n/g, ""));
 					e = {
 						input: /\(.*(add|every).*\)/g.test(e) || per,
 						value: +/\(([0-9.-]+).*\)$/g.exec(e)[1],
@@ -48,8 +48,10 @@
 							}
 							return str
 						})(e.replaceAll(/\s\([^\(]+\)$/g, "")),
-						increment: per || undefined
+						increment: per,
+						element: $("<tr></tr>")
 					};
+					e.element.html(`<td class="check">${e.increment ? "" : `<input type="checkbox" point-value="${e.value}" />`}</td><td class="question">${e.text}</td><td class="field">${e.input ? '<input type="text" />' : ""}</td>`)
 					if (/^\.+/g.test(e.text)) {
 						e.text = e.text.replaceAll(/^\.+/g, "");
 						questions[p].push(e)
@@ -58,10 +60,14 @@
 					}
 				}
 				$("#status").remove()
-				for(let k of questions)
-					for(let e of k){
-						$("#content").append(`<p>${e.text}</p>${e.input ? '<input type="text"/>':""}`)
-					}
+				
+				
+				p = 0;
+				$("#questions tbody").empty();
+				for(let e of questions[p]){
+					console.log(e)
+					$("#questions tbody").append(e.element)
+				}
 			})
 		</script>
 	</head>
@@ -73,11 +79,15 @@
 		<div id="content">
 			<div id="status">
 			</div>
+			<table id="questions">
+				<tbody>
+				</tbody>
+			</table>
 		</div>
 		<table>
 			<tr>
 				<td>
-					<div class="wikipediauserbox" style="border:1px solid #ccf; margin:1px; width:238px; direction:ltr; color: #000000; line-height: 1.5em;font-size: 127%;">
+					<div class="wikipediauserbox" style="border:1px solid #ccf; margin:1px; width:238px; direction:ltr; color: #000000; line-height: 1.5em; font-size: 127%;">
 						<table role="presentation" style="border-collapse:collapse; width:238px; margin-bottom:0; margin-top:0; background:#f8f8ff; font-size: 100%; display:table; box-sizing: border-box; text-indent:initial; border-spacing:2px; border-color:grey;">
 							<tbody style="display: table-row-group; vertical-align:middle; border-color:inherit;">
 								<tr style="display: table-row; vertical-align:inherit; border-color:inherit;">
