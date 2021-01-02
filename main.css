@@ -5,6 +5,8 @@ a:hover span,a:hover {
 	text-decoration: underline;
 }
 body {
+	background: #d8d8d8;
+	color: #000;
 	font-family: sans-serif;
 }
 h1 {
@@ -12,59 +14,74 @@ h1 {
 }
 .check {
 	text-align: center;
+	width: 1.5em;
+}
+.dark a:link:not(.initial) {
+	color: #88f;
+}
+.dark a:visited:not(.initial) {
+	color: #b030b0;
+}
+.dark {
+	background: #111;
+	color: #eee;
 }
 .dark-switch {
 	position: absolute;
 	right: 8px;
-}.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
-  border-radius: 34px;
+}
+.slider {
+	background-color: #ccc;
+	border-radius: 34px;
+	bottom: 0;
+	cursor: pointer;
+	left: 0;
+	position: absolute;
+	right: 0;
+	top: 0;
+	-webkit-transition: .4s;
+	transition: .4s;
 }
 .slider:before {
-  position: absolute;
-  content: url(dark.svg);
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
-  border-radius: 50%;
+	background-color: #FFF;
+	border-radius: 50%;
+	bottom: 4px;
+	content: url(dark.svg);
+	height: 26px;
+	left: 4px;
+	position: absolute;
+	-webkit-transition: .4s;
+	transition: .4s;
+	width: 26px;
 }
 .social {
 	position: absolute;
 }
 .switch input { 
-  opacity: 0;
-  width: 0;
-  height: 0;
+	height: 0;
+	opacity: 0;
+	width: 0;
 }
 .switch input:checked + .slider {
-  background-color: #2196F3;
+	background-color: #2196F3;
 }
 .switch input:checked + .slider:before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
-  transform: translateX(26px);
-  content: url(light.svg);
+	content: url(light.svg);
+	-webkit-transform: translateX(26px);
+	-ms-transform: translateX(26px);
+	transform: translateX(26px);
 }
 .switch input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
+	box-shadow: 0 0 1px #2196F3;
 }
 .switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
+	display: inline-block;
+	height: 34px;
+	position: relative;
+	width: 60px;
+}
+.total:empty::before {
+	content: "(your score)"
 }
 #test {
 	border: 1px solid gray;
