@@ -11,12 +11,12 @@ $(async function() {
 		lines.shift()
 	}
 	for (let e of lines) {
-		let per = /\((-?(\d*\.\d+|\d+)\s?(per|(for\s)?(every|each))).*\)$/g.test(e = e.replaceAll(/\n/g, ""));
+		let per = /\((-?(\d*\.\d+|\d+)\s?(per|(for\s)?(every|each))).*\)$/gi.test(e = e.replaceAll(/\n/g, ""));
 		e = {
 			input: /\(.*(add|every).*\)/g.test(e) || per,
 			value: +/\(([0-9.-]+).*\)$/g.exec(e)[1],
 			text: ((str) => {
-				let nowikis = str.match(/<nowiki>(((?!<\/nowiki>).)*)<\/nowiki>/g);
+				let nowikis = str.match(/<nowiki>(((?!<\/nowiki>).)*)<\/nowiki>/g) || [];
 				str = str
 					.replaceAll(/(^|[^'])'([^']|$)/gi, "$1&#39;$2")
 					.replaceAll(/\[\[(.+)\]\](s)/gi, "[[$1|$1$2]]")
@@ -26,10 +26,8 @@ $(async function() {
 					.replaceAll(/\[\[([^|\[\]]+)\|([^|\[\]]+)\]\]/gi, '<a href="https://en.wikipedia.org/wiki/$1">$2</a>')
 					.replaceAll(/\[\[([^|\[\]]+)\]\]/gi, '<a href="https://en.wikipedia.org/wiki/$1">$1</a>')
 					.replaceAll(/\{\{NUMBEROFARTICLES\}\}/g, articles)
-				if(nowikis){
-					for(let i = 1; i < nowikis.length; i++){
-						str = nowikis[i].replace(/<nowiki>(.*)<\/nowiki>/g, "$1")
-					}
+				for(let e of nowikis){
+					str = str.replace(/<nowiki>.*<\/nowiki>/g, e.replace(/<nowiki>(.*)<\/nowiki>/g, "$1").replaceAll(/\$/g, "$$$$"))
 				}
 				return str
 			})(e.replaceAll(/\s\([^\(]+\)$/g, "")),
@@ -42,7 +40,7 @@ $(async function() {
 		} else {
 			questions[++p] = [e]
 		}
-		e.element.html(`<td class="check"><input type="checkbox" ${e.increment ? "disabled" : ""} onchange='$(".total").html(+$(".total:last").html()+($(this).attr("point-value")*($(this).is(":checked")*2-1)))' point-value=${e.value} /></td><td class="question">${e.text}</td><td class="field">${e.input ? '<input type="text" onchange="$(\'.total\').html(+$(\'.total:last\').html()+(+$(this).val()))"/>' : ""}</td>`)
+		e.element.html(`<td class="check"><input type="checkbox" ${e.increment ? "disabled" : ""} onchange='$(".total").html(+$(".total:last").html()+$(this).attr("point-value")*(2*$(this).is(":checked")-1))' point-value=${e.value} /></td><td class="question">${e.text}</td><td class="field">${e.input ? `<input type="text" onchange='let e=+$(this).val()||0;$(".total").html(+$(".total:last").html()-+$(this).attr("previous-input")+($(this).attr("previous-input",e),e))' previous-input="0" />` : ""}</td>`)
 	}
 	$("#status").remove()
 
