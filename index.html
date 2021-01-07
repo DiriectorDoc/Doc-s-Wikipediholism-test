@@ -40,10 +40,10 @@
 				<tbody>
 				</tbody>
 			</table>
-			<table>
+			<table style="width: 50em;">
 				<tr>
-					<td>
-						<div class="wikipediauserbox" style="border:1px solid #ccf; margin:1px; width:238px; direction:ltr; color:#000000; line-height: 1.5em; font-size: 127%;">
+					<td style="width: 242px;">
+						<div class="wikipediauserbox type-switch" style="border:1px solid #ccf; margin:1px; width:238px; direction:ltr; color:#000000; line-height: 1.5em; font-size: 127%;">
 							<table role="presentation" style="border-collapse:collapse; width:238px; margin-bottom:0; margin-top:0; background:#f8f8ff; font-size: 100%; display:table; box-sizing: border-box; text-indent:initial; border-spacing:2px; border-color:grey;">
 								<tbody style="display: table-row-group; vertical-align:middle; border-color:inherit;">
 									<tr style="display: table-row; vertical-align:inherit; border-color:inherit;">
@@ -58,7 +58,7 @@
 							</table>
 						</div>
 						
-						<div class="wikipediauserbox" style="border:1px solid #ccf; margin:1px; width:238px; direction:ltr; color:#000000; line-height: 1.5em; font-size: 127%;">
+						<div class="wikipediauserbox type-switch hidden" style="border:1px solid #ccf; margin:1px; width:238px; direction:ltr; color:#000000; line-height: 1.5em; font-size: 127%;">
 							<table role="presentation" style="border-collapse:collapse; width:238px; margin-bottom:0; margin-top:0; background:#f8f8ff; font-size: 100%; display:table; box-sizing: border-box; text-indent:initial; border-spacing:2px; border-color:grey;">
 								<tbody>
 									<tr>
@@ -76,8 +76,10 @@
 						</div>
 						
 					</td>
-					<td><code>{{<a href="https://en.wikipedia.org/wiki/Template:User_Wikipediholic">User Wikipediholic</a>|<span class="total"></span>|<span class="revision"></span>}}</code></td>
-					<td><code>{{<a href="https://en.wikipedia.org/wiki/Template:User_Wikipedia/Wikipediholic">User Wikipedia/Wikipediholic</a>|score=<span class="total"></span>}}</code></td>
+					<td><code class="type-switch">{{<a href="https://en.wikipedia.org/wiki/Template:User_Wikipediholic">User Wikipediholic</a>|<span class="total"></span>|<span class="revision"></span>}}</code><code class="type-switch hidden">{{<a href="https://en.wikipedia.org/wiki/Template:User_Wikipedia/Wikipediholic">User Wikipedia/Wikipediholic</a>|score=<span class="total"></span>}}</code></td>
+					<td style="text-align: right">
+						<input type="checkbox" onclick='$(".type-switch").each(function(s){(s=$(this)).hasClass("hidden")?s.removeClass("hidden"):s.addClass("hidden")});'/><span style="margin-left: .5em">Alt style</span>
+					</td>
 				</tr>
 			</table>
 			<div id="footer">
