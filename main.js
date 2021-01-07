@@ -3,9 +3,11 @@ $(async function() {
 		articles = ($("#status").html("Loading Wikipedia statistics"),await $.getJSON("https://en.wikipedia.org/w/api.php?action=query&format=json&meta=siteinfo&formatversion=2&siprop=statistics&origin=*")).query.statistics.articles,
 		lines = content[1].split("\n#"),
 		p = -1,
-		questions = [];
+		questions = [],
+		revision = ($("#status").html("Establishing latest revision"),await $.getJSON("https://en.wikipedia.org/w/rest.php/v1/page/Wikipedia:Wikipediholism%20test/history")).revisions[0].id;
 
-	$(".revision").html(($("#status").html("Establishing latest revision"),await $.getJSON("https://en.wikipedia.org/w/rest.php/v1/page/Wikipedia:Wikipediholism%20test/history")).revisions[0].id)
+	$(".revision").html(revision)
+	$('a[href="{{revision}}"]').attr("href", "https://en.wikipedia.org/w/index.php?title=Wikipedia:Wikipediholism_test&oldid="+revision)
 	$("#status").html("Parsing data")
 	if (/^\n.*($|\n)/g.test(lines[0])) {
 		lines.shift()
