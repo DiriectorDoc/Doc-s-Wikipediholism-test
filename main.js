@@ -24,7 +24,7 @@ $(async function(){
 			}
 			return str
 		};
-	
+
 	scores = [];
 
 	$(".revision").html(revision)
@@ -77,17 +77,6 @@ $(async function(){
 		$(".github")[$(".switch input").is(":checked")?"removeClass":"addClass"]("white")
 	})
 
-	$("button.next,button.prev").prop("disabled", false)
-	$("button.prev").click(function(){
-		p--;
-		fillPage()
-	})
-	$("button.next").click(function(){
-		p++;
-		fillPage()
-	})
-
-
 	function fillPage(){
 		if(p < 0){
 			p=0
@@ -100,4 +89,14 @@ $(async function(){
 			}
 		}
 	}
+
+	$("button.next,button.prev").prop("disabled", false)
+	$("button.prev").click(function(){
+		p--;
+		fillPage()
+	})
+	$("button.next").click(function(){
+		p++;
+		fillPage()
+	})
 })
