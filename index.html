@@ -5,7 +5,7 @@
 		<meta name="description" content="Wikipediholism Test">
 		<meta name="author" content="Diriector_Doc">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="last-updated" content="Thu, 31 Dec 2020 06:06 GMT">
+		<meta name="last-updated" content="Sun, 17 Jan 2021 17:41 GMT">
 		<meta name="keywords" content="diriector_doc, diriectordoc, diriector doc, wikipedia, wikipediholism">
 		<title>Wikipediholism Test</title>
 		<link href="main.css" rel="stylesheet" type="text/css">
@@ -33,7 +33,7 @@
 			<table id="test">
 				<thead>
 					<tr>
-						<td></td>
+						<td/>
 						<td><button type="button" class="prev" disabled>← Prev</button><button type="button" class="next" disabled>Next →</button></td>
 					</tr>
 				</thead>
@@ -81,15 +81,15 @@
 						<code class="type-switch">{{<a href="https://en.wikipedia.org/wiki/Template:User_Wikipediholic">User Wikipediholic</a>|<span class="total"></span>|<span class="revision"></span>}}</code><code class="type-switch hidden">{{<a href="https://en.wikipedia.org/wiki/Template:User_Wikipedia/Wikipediholic">User Wikipedia/Wikipediholic</a>|score=<span class="total"></span>}}</code>
 					</td>
 					<td style="text-align: right">
-						<input type="checkbox" onclick='$(".type-switch").each(function(s){(s=$(this)).hasClass("hidden")?s.removeClass("hidden"):s.addClass("hidden")});'/><span style="margin-left: .5em">Alt style</span>
+						<input type="checkbox" onclick='$(".type-switch").each(function(s,a){$(a)[$(a).hasClass("hidden")?"removeClass":"addClass"]("hidden")});'/><span style="margin-left: .5em">Alt style</span>
 					</td>
 				</tr>
 			</table>
-			<div id="footer">
+			<div id="info">
 				<p>Wikipediholism Test v0.3_Beta &mdash; Diriector_Doc, 2020</p>
 				<p>Credit: Text on this page was fetched from <a href="https://en.wikipedia.org/wiki/Wikipedia:Wikipediholism_test">Wikipedia:Wikipediholism test</a>, which is availible under <a href="https://en.wikipedia.org/wiki/Wikipedia:Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>. Favicon is a modification of <a href="https://commons.wikimedia.org/wiki/File:Wikipediholic_mug.jpg">File:Wikipediholic_mug.jpg</a> which is released under the same license.</p>
-				<div class="footer" />
 			</div>
+			<div class="footer" />
 		</div>
 	</body>
 </html>
