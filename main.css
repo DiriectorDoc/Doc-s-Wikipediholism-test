@@ -135,6 +135,12 @@ h1 {
 	margin: 1px;
 	width: 238px;
 }
+#diagnosis:empty::before {
+	content: "Click on a checkbox to start the test."
+}
+#diagnosis {
+	margin: 5px 0;
+}
 #test {
 	border: 1px solid gray;
 	width: 50em;
