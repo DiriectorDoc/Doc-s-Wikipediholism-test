@@ -1,14 +1,48 @@
-$(async function() {
-	let content = ($("#status").html("Getting test contents"),await $.getJSON("https://en.wikipedia.org/w/api.php?action=query&format=json&prop=revisions&titles=Wikipedia%3AWikipediholism_test&formatversion=2&rvprop=content&rvslots=*&origin=*")).query.pages[0].revisions[0].slots.main.content.split(/==[\w\s]+==/g),
+$(async function(){
+	let content = ($("#status").html("Fetching questions"),await $.getJSON("https://en.wikipedia.org/w/api.php?action=query&format=json&prop=revisions&titles=Wikipedia%3AWikipediholism_test&formatversion=2&rvprop=content&rvslots=*&origin=*")).query.pages[0].revisions[0].slots.main.content.split(/==[\w\s]+==/g),
 		articles = ($("#status").html("Loading Wikipedia statistics"),await $.getJSON("https://en.wikipedia.org/w/api.php?action=query&format=json&meta=siteinfo&formatversion=2&siprop=statistics&origin=*")).query.statistics.articles,
+		revision = ($("#status").html("Establishing latest revision"),await $.getJSON("https://en.wikipedia.org/w/rest.php/v1/page/Wikipedia:Wikipediholism%20test/history")).revisions[0].id,
+
 		lines = content[1].split("\n#"),
 		p = -1,
 		questions = [],
-		revision = ($("#status").html("Establishing latest revision"),await $.getJSON("https://en.wikipedia.org/w/rest.php/v1/page/Wikipedia:Wikipediholism%20test/history")).revisions[0].id;
+
+		wikiParse = (str) => {
+			let nowikis = str.match(/<nowiki>(((?!<\/nowiki>).)*)<\/nowiki>/g) || [];
+			str = str
+				.replaceAll(/(^|[^'])'([^']|$)/gi, "$1&#39;$2")
+				.replaceAll(/\[\[(.+)\]\](s)/gi, "[[$1|$1$2]]")
+				.replaceAll(/\[(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/=]*))\s(.*)\]/gi, '<a href="$1">$4</a>')
+				.replaceAll(/''([^']+)''/gi, '<i>$1</i>')
+				.replaceAll(/'''([^']+)'''/gi, '<strong>$1</strong>')
+				.replaceAll(/\[\[([^|\[\]]+)\|([^|\[\]]+)\]\]/gi, '<a href="https://en.wikipedia.org/wiki/$1">$2</a>')
+				.replaceAll(/\[\[([^|\[\]]+)\]\]/gi, '<a href="https://en.wikipedia.org/wiki/$1">$1</a>')
+				.replaceAll(/\{\{NUMBEROFARTICLES\}\}/g, articles)
+				.replaceAll(/{{[sS]miley\s*\|\s*desc\s*=\s*(.+)}}/g, '<abbr title="$1" style="border-bottom: none;"><img alt="Face-smile.svg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Face-smile.svg/18px-Face-smile.svg.png" decoding="async" width="18" height="18" srcset="https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Face-smile.svg/27px-Face-smile.svg.png 1.5x, https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Face-smile.svg/36px-Face-smile.svg.png 2x" data-file-width="48" data-file-height="48" style="cursor: help;border: 0;vertical-align: middle;"></abbr>')
+			for(let e of nowikis){
+				str = str.replace(/<nowiki>.*<\/nowiki>/g, e.replace(/<nowiki>(.*)<\/nowiki>/g, "$1").replaceAll(/\$/g, "$$$$"))
+			}
+			return str
+		};
+
+	scores = [];
 
 	$(".revision").html(revision)
 	$('a[href="{{revision}}"]').attr("href", "https://en.wikipedia.org/w/index.php?title=Wikipedia:Wikipediholism_test&oldid="+revision)
 	$("#status").html("Parsing data")
+	for(let e of content[2].match(/\|\s?[0-9\-]+(\s?[-–—]\s?[0-9\-]+|[\w\s]+)\s?\|\|\s?.+/g)){
+		let score = /^\|\s?([0-9\-]+)(\s?[-–—]\s?([0-9\-]+)|[\w\s]+)\s?\|\|\s?(.+)$/g.exec(e);
+
+		scores.push(!scores[0] ? {
+			lower: -Infinity,
+			upper: +score[1],
+			diagnosis: wikiParse(score[4])
+		} : {
+			lower: +score[1],
+			upper: +score[3] || Infinity,
+			diagnosis: wikiParse(score[4])
+		})
+	}
 	if (/^\n.*($|\n)/g.test(lines[0])) {
 		lines.shift()
 	}
@@ -17,22 +51,7 @@ $(async function() {
 		e = {
 			input: /\(.*(add|every).*\)/g.test(e) || per,
 			value: +/\(([0-9.-]+).*\)$/g.exec(e)[1],
-			text: ((str) => {
-				let nowikis = str.match(/<nowiki>(((?!<\/nowiki>).)*)<\/nowiki>/g) || [];
-				str = str
-					.replaceAll(/(^|[^'])'([^']|$)/gi, "$1&#39;$2")
-					.replaceAll(/\[\[(.+)\]\](s)/gi, "[[$1|$1$2]]")
-					.replaceAll(/\[(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/=]*))\s(.*)\]/gi, '<a href="$1">$4</a>')
-					.replaceAll(/''([^']+)''/gi, '<i>$1</i>')
-					.replaceAll(/'''([^']+)'''/gi, '<strong>$1</strong>')
-					.replaceAll(/\[\[([^|\[\]]+)\|([^|\[\]]+)\]\]/gi, '<a href="https://en.wikipedia.org/wiki/$1">$2</a>')
-					.replaceAll(/\[\[([^|\[\]]+)\]\]/gi, '<a href="https://en.wikipedia.org/wiki/$1">$1</a>')
-					.replaceAll(/\{\{NUMBEROFARTICLES\}\}/g, articles)
-				for(let e of nowikis){
-					str = str.replace(/<nowiki>.*<\/nowiki>/g, e.replace(/<nowiki>(.*)<\/nowiki>/g, "$1").replaceAll(/\$/g, "$$$$"))
-				}
-				return str
-			})(e.replaceAll(/\s\([^\(]+\)$/g, "")),
+			text: wikiParse(e.replaceAll(/\s\([^\(]+\)$/g, "")),
 			increment: per,
 			element: $("<tr></tr>")
 		};
@@ -42,7 +61,7 @@ $(async function() {
 		} else {
 			questions[++p] = [e]
 		}
-		e.element.html(`<td class="check"><input type="checkbox" ${e.increment ? "disabled" : ""} onchange='$(".total").html(+$(".total:last").html()+$(this).attr("point-value")*(2*$(this).is(":checked")-1))' point-value=${e.value} /></td><td class="question">${e.text}</td><td class="field">${e.input ? `<input type="text" onchange='let e=+$(this).val()||0;$(".total").html(+$(".total:last").html()-+$(this).attr("previous-input")+($(this).attr("previous-input",e),e))' previous-input="0" />` : ""}</td>`)
+		e.element.html(`<td class="check"><input type="checkbox" ${e.increment ? "disabled" : ""} onchange='let total=+$(".total:last").html()+$(this).attr("point-value")*(2*$(this).is(":checked")-1);$(".total").html(total);for(let t of scores)if(total>=t.lower&&total<=t.upper){$("#diagnosis").html(t.diagnosis);break}' point-value=${e.value} /></td><td class="question">${e.text}</td><td class="field">${e.input ? `<input type="text" onchange='let e=+$(this).val()||0;$(".total").html(+$(".total:last").html()-+$(this).attr("previous-input")+($(this).attr("previous-input",e),e))' previous-input="0" />` : ""}</td>`)
 	}
 	$("#status").remove()
 
@@ -58,17 +77,6 @@ $(async function() {
 		$(".github")[$(".switch input").is(":checked")?"removeClass":"addClass"]("white")
 	})
 
-	$("button.next,button.prev").prop("disabled", false)
-	$("button.prev").click(function(){
-		p--;
-		fillPage()
-	})
-	$("button.next").click(function(){
-		p++;
-		fillPage()
-	})
-
-
 	function fillPage(){
 		if(p < 0){
 			p=0
@@ -81,4 +89,14 @@ $(async function() {
 			}
 		}
 	}
+
+	$("button.next,button.prev").prop("disabled", false)
+	$("button.prev").click(function(){
+		p--;
+		fillPage()
+	})
+	$("button.next").click(function(){
+		p++;
+		fillPage()
+	})
 })
