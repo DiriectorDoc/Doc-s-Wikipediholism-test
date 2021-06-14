@@ -43,20 +43,20 @@ $(async function(){
 			diagnosis: wikiParse(score[4])
 		})
 	}
-	if (/^\n.*($|\n)/g.test(lines[0])) {
+	if(/^\n.*($|\n)/g.test(lines[0])){
 		lines.shift()
 	}
-	for (let e of lines) {
+	for(let e of lines){
 		let per = /\((-?(\d*\.\d+|\d+)\s?(per|(for\s)?(every|each))).*\)$/gi.test(e = e.replaceAll(/\n/g, ""));
 		e = {
 			input: /\(.*(add|every).*\)/g.test(e) || per,
 			value: +/\(([0-9.-]+).*\)$/g.exec(e)[1],
 			text: wikiParse(e.replaceAll(/\s\([^\(]+\)$/g, "")),
 			increment: per,
-			element: $("<tr></tr>")
+			element: $("<tr>")
 		};
-		if (/^\.+/g.test(e.text)) {
-			e.text = e.text.replaceAll(/^\.+/g, "");
+		if (/^\*+/g.test(e.text)) {
+			e.text = e.text.replaceAll(/^\*+/g, "");
 			questions[p].push(e)
 		} else {
 			questions[++p] = [e]
